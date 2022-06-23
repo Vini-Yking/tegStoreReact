@@ -16,7 +16,6 @@ const Categorias = () => {
     try {
       const { data } = await axios.get('https://teg-store-api.herokuapp.com/tegloja/categorias')
       setCategorias(data)
-      console.log(data);
     } catch (e) {
       //lança uma excessão 
       console.log(e)
@@ -28,11 +27,10 @@ const Categorias = () => {
   useEffect(() => {
     getCategorias();
   }, [])
-  // {categorias.map((categoria) => <li key={categoria.id}>{categoria.categoria}</li>)}
 
   return (
     <>
-      <div className="container p-2 mb-5 ">
+      <div className="container mb-6 ">
         <div className="row">
           {categorias.map((categoria) =>
             <Card key={categoria.id} index={categoria.id} categoria={categoria.categoria}></Card>)}

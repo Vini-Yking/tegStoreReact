@@ -1,16 +1,19 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './Components/Categorias'
-import Categorias from './Components/Categorias';
+import Categorias from './Components/Categorias'
 import './style.css';
+import banner from './../../assets/imagembanner/Banner.png'
 
 const Home = () => {
     return (
         <>
-        <div className='container-fluid'>
-            Aqui vai um banner
-        </div>
-            <h1 className='titulo'>Categorias</h1>
-            <Categorias />
+            <div className='p-0'>
+                <img src={banner} className="banner mb-2" alt='Banner' />
+            </div>
+            <div className="shadow container rounded bg-light">
+                <h1 className="titulo text-black"> Categorias</h1>
+                <Categorias />
+            </div>
         </>
     )
 }

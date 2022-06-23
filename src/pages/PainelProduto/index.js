@@ -4,40 +4,42 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import ModalAdicionar from "./components/ModalAdicionar";
 import ModalExcluir from "./components/ModalExcluir";
+import { getAllProdutos } from '../../services/produtoService'
+import ModalEditar from "./components/ModalEditar";
 
 const PainelProduto = () => {
 
-    const [nomeProduto, setNomeProduto] = useState("")
     const [produtos, setProdutos] = useState([])
-    const [produtoSelecionado, setProdutoSelecionado] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [modalAdicionar, setModalAdicionar] = useState(false);
+    const [produtoSelecionado, setProdutoSelecionado] = useState(0)
     const [showAdicionar, setShowAdicionar] = useState(false);
     const [showExcluir, setShowExcluir] = useState(false);
-
-    const getProdutos = async () => {
-        setLoading(true)
-        try{
-            const { data } = await axios.get('https://teg-store-api.herokuapp.com/tegloja/produtos')
-            setProdutos(data)
-        } catch(e) {
-            //lança uma excessão 
-            console.log(e)        
-        }
-        setLoading(false)
-      }
+    const [showEditar, setShowEditar] = useState(false);
       
     useEffect(() => {
-    getProdutos()},[])   
+        pegarProdutos()},[showExcluir, showEditar, showAdicionar])
+
+        // Consumo da Api
+        const pegarProdutos = async () => {
+            const response = await getAllProdutos();
+            setProdutos(response.data)
+        }
 
     // Controles dos modais
     const handleCloseAdicionar = () => setShowAdicionar(false);
     const handleShowAdicionar = () => setShowAdicionar(true);
     const handleCloseExcluir = () => setShowExcluir(false);
-    const handleShowExcluir = () => setShowExcluir(true);
-
-    // Controle do produto
     
+    const handleShowExcluir = (idprod) => {
+        setProdutoSelecionado(idprod);
+        setShowExcluir(true);
+    }    
+
+    const handleShowEditar = (idprod) => {
+        setProdutoSelecionado(idprod);
+        setShowEditar(true);
+    }  
+
+    const handleCloseEditar = () => setShowEditar(false);
 
     return (
         <div className="container">
@@ -46,7 +48,7 @@ const PainelProduto = () => {
                 <hr />
                 <Button variant="outline-success" className="mb-3" onClick={handleShowAdicionar}>Adicionar</Button>
                 <ModalAdicionar handleClose={handleCloseAdicionar} show={showAdicionar} />
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive="md">
                 <thead>
                     <tr>
                         <th>id</th>
@@ -60,23 +62,24 @@ const PainelProduto = () => {
                 </thead>
                 <tbody>
                     {produtos.map((produto) => 
-                    <tr>
+                    <tr key={produto.idProduto}>
                         <td >{produto.idProduto}</td>
                         <td>{produto.nomeProduto}</td>
                         <td>{produto.categoria.categoria}</td>
-                        <td>{produto.valorUnitario}</td>
+                        <td>R$ {produto.valorUnitario.toFixed(2)}</td>
                         <td>{produto.quantidadeEstoque}</td>
                         <td>{produto.dataAlteracao}</td>
                         <td>
-                            <Button variant="outline-warning" className="me-2">Editar</Button>
-                            <Button variant="outline-danger" onClick={handleShowExcluir}>Excluir</Button>
+                            <Button variant="outline-warning" onClick={() => handleShowEditar(produto.idProduto)} className="me-2">Editar</Button>
+                            <Button variant="outline-danger" onClick={() => handleShowExcluir(produto.idProduto)}>Excluir</Button>
                         </td>
                     </tr>
                     )}
                 </tbody>
                 </Table>
-
-                <ModalExcluir handleClose={handleCloseExcluir} show={showExcluir}/>
+                
+                <ModalEditar idproduto={produtoSelecionado} handleClose={handleCloseEditar} show={showEditar} />
+                <ModalExcluir idproduto={produtoSelecionado} handleClose={handleCloseExcluir} show={showExcluir}/>
 
             </form>
         </div>
